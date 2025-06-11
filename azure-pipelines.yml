@@ -1,25 +1,55 @@
 trigger:
-  branches:
-    include:
-      - master
-      - main
+  - main
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: "ubuntu-latest"
 
-steps:
-  - task: NodeTool@0
-    inputs:
-      versionSpec: '22.x'
-    displayName: 'Install Node.js'
+variables:
+  nodeVersion: "22.x"
+  # Replace with your Azure Static Web App name
+  staticWebAppName: "testpipelinefrontend"
+  # Remove the hardcoded token for security
 
-  - script: |
-      npm install
-      npm run build
-    displayName: 'Build React App'
+stages:
+  - stage: Build
+    displayName: "Build and Test"
+    jobs:
+      - job: BuildAndTest
+        displayName: "Build and Test"
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: "$(nodeVersion)"
+            displayName: "Install Node.js"
 
-  - task: AzureStaticWebApp@0
-    inputs:
-      app_location: '/'
-      output_location: 'dist'
-      azure_static_web_apps_api_token: $(deployment_token)
+          - script: |
+              npm install
+              npm run build
+            displayName: "npm install and build"
+
+          - script: |
+              ls -al
+              ls -al dist
+            displayName: "List files for debug"
+
+          - script: |
+              npm test
+            displayName: "Run Tests"
+            condition: succeededOrFailed()
+
+
+  - stage: Deploy
+    displayName: "Deploy to Azure Static Web App"
+    dependsOn: Build
+    condition: succeeded()
+    jobs:
+      - job: Deploy
+        displayName: "Deploy to Azure Static Web App"
+        steps:
+          - task: AzureStaticWebApp@0
+            inputs:
+              app_location: 'dist'
+              api_location: ''
+              output_location: ''
+              azure_static_web_apps_api_token: '$(AZURE_STATIC_WEB_APPS_API_TOKEN)'
+
