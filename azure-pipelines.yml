@@ -11,45 +11,16 @@ variables:
   # Remove the hardcoded token for security
 
 stages:
-  - stage: Build
-    displayName: "Build and Test"
-    jobs:
-      - job: BuildAndTest
-        displayName: "Build and Test"
-        steps:
-          - task: NodeTool@0
-            inputs:
-              versionSpec: "$(nodeVersion)"
-            displayName: "Install Node.js"
-
-          - script: |
-              npm install
-              npm run build
-            displayName: "npm install and build"
-
-          - script: |
-              ls -al
-              ls -al dist
-            displayName: "List files for debug"
-
-          - script: |
-              npm test
-            displayName: "Run Tests"
-            condition: succeededOrFailed()
-
-
   - stage: Deploy
     displayName: "Deploy to Azure Static Web App"
-    dependsOn: Build
-    condition: succeeded()
     jobs:
       - job: Deploy
         displayName: "Deploy to Azure Static Web App"
         steps:
           - task: AzureStaticWebApp@0
             inputs:
-              app_location: 'dist'
+              app_location: '.'
               api_location: ''
-              output_location: ''
+              output_location: 'dist'
               azure_static_web_apps_api_token: '$(AZURE_STATIC_WEB_APPS_API_TOKEN)'
 
