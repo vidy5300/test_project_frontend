@@ -1,0 +1,61 @@
+trigger:
+  - main
+
+pool:
+  vmImage: "ubuntu-latest"
+
+variables:
+  nodeVersion: "22.x"
+  # Replace with your Azure Static Web App name
+  staticWebAppName: "testpipelinefrontend"
+
+stages:
+  - stage: Build
+    displayName: "Build and Test"
+    jobs:
+      - job: BuildAndTest
+        displayName: "Build and Test"
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: "$(nodeVersion)"
+            displayName: "Install Node.js"
+
+          - script: |
+              npm install
+              npm run build
+            displayName: "npm install and build"
+
+          - script: |
+              npm test
+            displayName: "Run Tests"
+            condition: succeededOrFailed()
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: 'dist'
+              ArtifactName: 'drop'
+              publishLocation: 'Container'
+
+  - stage: Deploy
+    displayName: "Deploy to Azure Static Web App"
+    dependsOn: Build
+    condition: succeeded()
+    jobs:
+      - job: Deploy
+        displayName: "Deploy to Azure Static Web App"
+        steps:
+          - task: DownloadBuildArtifacts@1
+            inputs:
+              buildType: 'current'
+              downloadType: 'single'
+              artifactName: 'drop'
+              downloadPath: '$(System.ArtifactsDirectory)'
+
+          - task: AzureStaticWebApp@0
+            inputs:
+              app_location: '$(System.ArtifactsDirectory)/drop'
+              api_location: ''
+              output_location: ''
+              skip_app_build: true
+              azure_static_web_apps_api_token: '$(AZURE_STATIC_WEB_APPS_API_TOKEN)' 
