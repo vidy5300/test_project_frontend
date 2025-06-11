@@ -28,6 +28,11 @@ stages:
             displayName: "npm install and build"
 
           - script: |
+              ls -al
+              ls -al dist
+            displayName: "List files for debug"
+
+          - script: |
               npm test
             displayName: "Run Tests"
             condition: succeededOrFailed()
