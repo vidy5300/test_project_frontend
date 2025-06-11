@@ -8,6 +8,7 @@ variables:
   nodeVersion: "22.x"
   # Replace with your Azure Static Web App name
   staticWebAppName: "testpipelinefrontend"
+  AZURE_STATIC_WEB_APPS_API_TOKEN: "05c260ff199f7fd2084dc2572c3518c3c339cec1f1b9cc18dccf711a4f92e6f406-3a23fcae-7cd2-48d7-b48f-56ef4f0476e101e01090fd9b451e"
 
 stages:
   - stage: Build
