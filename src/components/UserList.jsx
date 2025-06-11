@@ -25,6 +25,7 @@ import axios from "axios";
 // For development add this in the .env file VITE_API_URL=http://localhost:5000
 const apiUrl = import.meta.env.VITE_API_URL;
 const API_URL = `${apiUrl}/api/users`;
+console.log("VITE_API_URL:", import.meta.env.VITE_API_URL);
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
