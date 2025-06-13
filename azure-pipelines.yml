@@ -17,6 +17,17 @@ stages:
       - job: Deploy
         displayName: "Deploy to Azure Static Web App"
         steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '$(nodeVersion)'
+            displayName: 'Install Node.js'
+
+          # ✅ Inject VITE_API_URL into a .env file for Vite to pick up
+          - script: |
+              echo "VITE_API_URL=$VITE_API_URL" >> .env
+              cat .env
+            displayName: "Create .env file with VITE_API_URL"
+            
           - task: AzureStaticWebApp@0
             inputs:
               app_location: '.'
