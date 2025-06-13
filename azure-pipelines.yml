@@ -5,10 +5,11 @@ pool:
   vmImage: "ubuntu-latest"
 
 variables:
-  nodeVersion: "22.x"
-  # Replace with your Azure Static Web App name
-  staticWebAppName: "testpipelinefrontend"
-  - group: "TestProject"
+  - group: "TestProject"  # Define the group first, this is where the variable VITE_API_URL is defined
+  - name: nodeVersion
+    value: "22.x"
+  - name: staticWebAppName
+    value: "testpipelinefrontend"
 
 stages:
   - stage: Deploy
