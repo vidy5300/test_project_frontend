@@ -8,7 +8,7 @@ variables:
   nodeVersion: "22.x"
   # Replace with your Azure Static Web App name
   staticWebAppName: "testpipelinefrontend"
-  # Remove the hardcoded token for security
+  - group: "TestProject"
 
 stages:
   - stage: Deploy
@@ -27,7 +27,7 @@ stages:
               echo "VITE_API_URL=$VITE_API_URL" >> .env
               cat .env
             displayName: "Create .env file with VITE_API_URL"
-            
+
           - task: AzureStaticWebApp@0
             inputs:
               app_location: '.'
